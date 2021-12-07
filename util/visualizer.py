@@ -95,9 +95,7 @@ class Visualizer():
             util.mkdirs([self.web_dir, self.img_dir])
         # create a logging file to store training losses
         self.log_name = os.path.join(opt.checkpoints_dir, opt.name, 'loss_log.txt')
-        with open(self.log_name, "a") as log_file:
-            now = time.strftime("%c")
-            log_file.write('================ Training Loss (%s) ================\n' % now)
+        self.append_to_log_file('================ Training Loss (%s) ================' % time.strftime("%c"))
 
     def reset(self):
         """Reset the self.saved status"""
@@ -252,5 +250,21 @@ class Visualizer():
             message += '%s: %.3f ' % (k, v)
 
         print(message)  # print the message
+        self.append_to_log_file(message)
+
+    # losses: same format as |losses| of plot_current_losses
+    def print_learning_rate(self, epoch, old_lr: int, new_lr: int):
+        """print old and new learning rate; also save the learning rates to the disk
+
+        Parameters:
+            epoch (int) -- current epoch
+            old_lr (int) -- old learning rate
+            new_lr (int) -- old new rate
+        """
+        message = '(epoch: %d, learning rate %.7f -> %.7f) ' % (epoch, old_lr, new_lr)
+        print(message)  # print the message
+        self.append_to_log_file(message)
+
+    def append_to_log_file(self, message: str):
         with open(self.log_name, "a") as log_file:
-            log_file.write('%s\n' % message)  # save the message
+            log_file.write('%s\n' % message)

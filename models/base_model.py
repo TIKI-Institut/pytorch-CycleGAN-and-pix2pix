@@ -1,5 +1,6 @@
 import os
 import torch
+from typing import Tuple
 from collections import OrderedDict
 from abc import ABC, abstractmethod
 from . import networks
@@ -113,7 +114,7 @@ class BaseModel(ABC):
         """ Return image paths that are used to load current data"""
         return self.image_paths
 
-    def update_learning_rate(self):
+    def update_learning_rate(self) -> Tuple[int, int]:
         """Update learning rates for all the networks; called at the end of every epoch"""
         old_lr = self.optimizers[0].param_groups[0]['lr']
         for scheduler in self.schedulers:
@@ -123,7 +124,7 @@ class BaseModel(ABC):
                 scheduler.step()
 
         lr = self.optimizers[0].param_groups[0]['lr']
-        print('learning rate %.7f -> %.7f' % (old_lr, lr))
+        return old_lr, lr
 
     def get_current_visuals(self):
         """Return visualization images. train.py will display these images with visdom, and save the images to a HTML"""
